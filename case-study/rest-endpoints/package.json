@@ -12,7 +12,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.24.8",
     "@prisma/client": "^5.20.0",
     "@stripe/stripe-js": "^4.5.0",
     "axios": "^1.7.7",
@@ -34,6 +33,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.24.8",
     "@babel/preset-env": "^7.25.4",
     "@mermaid-js/mermaid-cli": "^11.2.0",
     "babel-jest": "^29.7.0",
