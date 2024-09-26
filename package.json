@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.24.8",
     "@stripe/stripe-js": "^4.5.0",
     "ngrok": "^5.0.0-beta.2"
   }
