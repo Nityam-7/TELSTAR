@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.24.8",
+    "@babel/preset-env": "^7.25.4",
     "@prisma/client": "^5.19.1",
     "@stripe/stripe-js": "^4.5.0",
     "bcryptjs": "^2.4.3",
