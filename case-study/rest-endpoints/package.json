@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.24.8",
     "@prisma/client": "^5.20.0",
     "@stripe/stripe-js": "^4.5.0",
     "axios": "^1.7.7",
