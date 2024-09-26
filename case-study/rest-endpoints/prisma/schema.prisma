@@ -79,8 +79,4 @@ enum PlanType {
   POSTPAID
 }
 
-generator erd {
-  provider = "prisma-erd-generator"
-  theme    = "forest"
-  mmdcPath = "node_modules/.bin"
-}
+
