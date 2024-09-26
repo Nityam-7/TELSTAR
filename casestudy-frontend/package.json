@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
+    "casestudy-frontend": "file:",
     "ngrok": "^5.0.0-beta.2",
     "pdfkit": "^0.15.0",
     "react": "^18.3.1",

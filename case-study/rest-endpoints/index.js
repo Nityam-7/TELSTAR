@@ -321,7 +321,7 @@ app.post('/register', async (req, res) => {
     res.status(201).send({ auth: true, token });
   } catch (error) {
     console.error('Error registering user:', error);
-    res.status(500).send('There was a problem registering the user.');
+    res.status(400).send('There was a problem registering the user.');
   }
 });
 
@@ -521,72 +521,69 @@ app.post('/login', async (req, res) => {
  *                   description: Error message
  *                   example: "Missing prepaidBalance for prepaid plan"
  */
-
 app.post("/admin/addPlan", async (req, res) => {
-  const { planName, ratePerUnit, planType, prepaidBalance, billingCycle, description } = req.body;
-  let newPlan = new Plan(planName, ratePerUnit, planType);
+  const { planName, ratePerUnit, planType, prepaidBalance, billingCycle } = req.body;
+
+  let plan = new Plan(planName,ratePerUnit,planType)
+
   try {
-    // Check if the plan already exists
-    const existingPlan = await prisma.plan.findUnique({
-      where: { planName }
-    });
-
-    if (existingPlan) {
-      return res.status(400).json({ error: "Plan with this name already exists" });
-    }
-
-    // Create the plan in the Plan table
-     newPlan = await prisma.plan.create({
+    // Create the new plan in the database
+    plan = await prisma.plan.create({
       data: {
-        planName,
-        ratePerUnit,
-        description,
-        planId : newPlan.planId
+        planName: planName,
+        ratePerUnit: ratePerUnit,
+        billingCycle:billingCycle,
+        planId:plan.planId
       },
     });
-
+    // If the plan is of type PREPAID
     if (planType === "PREPAID") {
-      // Ensure that prepaidBalance is provided for PREPAID plans
       if (prepaidBalance === undefined) {
-        return res.status(400).json({ error: "Missing prepaidBalance for prepaid plan" });
+        return res
+          .status(400)
+          .json({ error: "Missing prepaidBalance for prepaid plan" });
       }
 
-      // Create an entry in PrepaidPlan table
       const prepaidPlan = await prisma.prepaidPlan.create({
         data: {
-          planId: newPlan.planId,
-          unitsAvailable: prepaidBalance / ratePerUnit, // Calculate units available
-          prepaidBalance
+          planId: plan.planId,
+          unitsAvailable: prepaidBalance / ratePerUnit,  // Calculate units based on the balance
+          prepaidBalance: prepaidBalance,
+          billingCycle:billingCycle
         },
       });
 
-      res.status(201).json({ plan: newPlan, prepaidPlan });
+      // Respond with the created plan and prepaid plan details
+      return res.status(201).json({ plan, prepaidPlan });
+    } 
 
-    } else if (planType === "POSTPAID") {
-      // Ensure that billingCycle is provided for POSTPAID plans
+    // If the plan is of type POSTPAID
+    else if (planType === "POSTPAID") {
       if (!billingCycle) {
-        return res.status(400).json({ error: "Missing billingCycle for postpaid plan" });
+        return res
+          .status(400)
+          .json({ error: "Missing billingCycle for postpaid plan" });
       }
 
-      // Create an entry in PostpaidPlan table
       const postpaidPlan = await prisma.postpaidPlan.create({
         data: {
-          planId: newPlan.planId,
-          unitsUsed: 0, // Default value for units used
-          billingCycle
+          planId: plan.planId,
+          unitsUsed: 0, // Initial units used is 0 for postpaid
+          billingCycle: billingCycle,  // Add billing cycle
         },
       });
 
-      res.status(201).json({ plan: newPlan, postpaidPlan });
-
-    } else {
-      // If planType is neither PREPAID nor POSTPAID, return an error
+      // Respond with the created plan and postpaid plan details
+      return res.status(201).json({ plan, postpaidPlan });
+    } 
+    
+    // If the planType is invalid, throw an error
+    else {
       return res.status(400).json({ error: "Invalid plan type" });
     }
-
   } catch (error) {
-    console.error("Error adding plan:", error);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("Error adding plan: ", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 
@@ -2383,6 +2380,8 @@ app.post('/validateCustomer', async (req, res) => {
 
 
 // Listen on the port
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is app running on port ${PORT}`);
 });
+
+export default server
